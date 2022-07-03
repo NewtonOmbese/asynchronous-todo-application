@@ -6,9 +6,7 @@ const timeField = document.getElementById("time-field");
 const bodyField = document.getElementById("body-field");
 const todoList = document.querySelector(".todo-content");
 const div = document.createElement("div");
-
 updateTodoButton.style.display = "none"
-
 let Todos = [];
 
 // REST api
@@ -49,117 +47,4 @@ const displayAllTodos = () => {
 
 	console.log(Todos);
 }
-
 displayAllTodos();
-
-// const addTodo = () => {
-// 	const id = idField.value;
-// 	const timestamp = timeField.value;
-// 	const body = bodyField.value;
-// 	const status = "Not complete";
-// 	Todos.push({id,timestamp, body, status})
-// 	idField.value = "";
-// 	timeField.value = "";
-// 	bodyField.value = "";
-// 	displayAllTodos();
-// }
-
-const addTodo = () => {
-	const id = idField.value;
-	const timestamp = timeField.value;
-	const body = bodyField.value;
-	const status = "Not complete";
-	axios
-    .post('http://localhost:3000/posts', {id,timestamp, body, status})
-    .then(res => console.log(res.data))
-    .catch(err => console.error(err));
-	idField.value = "";
-	timeField.value = "";
-	bodyField.value = "";
-	displayAllTodos();
-}
-
-const editTodo = (itemId) => {
-	createTodoButton.style.display = "none"
-	updateTodoButton.style.display = "block"
-	const {id, timestamp, status, body} = Todos.filter(todo => todo.id == itemId)[0];
-
-	idField.value = id;
-	timeField.value = getTimeStamp();
-	bodyField.value = body;
-}
-
-const generateID = () => {
-	let id = `${Math.random().toString(36).substr(2, 6)}-${Math.random().toString(36).substr(2, 4)}-${Math.random().toString(36).substr(2, 4)}-${Math.random().toString(36).substr(2, 6)}`;
-	return id;
-}
-
-const getTimeStamp = () => {
-	let date = new Date();
-	let time = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
-	return time;
-}
-
-const addNewTodo = () => {
-	idField.value = generateID();
-	timeField.value = getTimeStamp();
-}
-
-const deleteTodo = (itemId) => {
-	Todos = Todos.filter(todo => todo.id != itemId);
-	displayAllTodos();
-}
-
-const updateTodo = () => {
-	const todos = Todos.map(todo=>{
-		if(todo.id === idField.value){
-			todo.status = "Not complete";
-			todo.body = bodyField.value;
-			todo.timestamp = timeField.value;
-			return todo;
-		}else{
-			return todo;
-		}
-	})
-	Todos = todos;
-	idField.value = "";
-	timeField.value = "";
-	bodyField.value = "";
-	displayAllTodos();
-	updateTodoButton.style.display = "none"
-	createTodoButton.style.display = "block"
-}
-
-const markTodoAsComplete = (itemId) => {
-	const todos = Todos.map(todo=>{
-		if(todo.id === itemId){
-			todo.status = "Complete";
-			return todo;
-		}else{
-			return todo;
-		}
-	})
-	Todos = todos;
-	displayAllTodos();
-}
-
-todoList.addEventListener('click', (e)=>{
-
-	const id = e.target.parentElement.parentElement.dataset.id;
-
-	if(e.target.classList.contains('fa-edit')){
-	  editTodo(id);
-	}
-	
-	if(e.target.classList.contains('fa-trash-alt')) {
-	  deleteTodo(id);
- 	}
-
-	if(e.target.classList.contains('fa-check')){
-	  markTodoAsComplete(id);
-	}
-})
-
-addNewTodoButton.addEventListener('click', addNewTodo);
-createTodoButton.addEventListener('click', addTodo);
-updateTodoButton.addEventListener('click', updateTodo);
