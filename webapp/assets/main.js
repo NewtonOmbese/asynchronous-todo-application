@@ -48,3 +48,192 @@ const displayAllTodos = () => {
 	console.log(Todos);
 }
 displayAllTodos();
+const id = idField.value;
+const timestamp = timeField.value;
+const body = bodyField.value;
+const addTodo = () => {
+	const id = idField.value;
+const timestamp = timeField.value;
+const body = bodyField.value;
+	const status = "Not complete";
+	// Todos.push({id,timestamp, body, status})
+	idField.value = "";
+	timeField.value = "";
+	bodyField.value = "";
+	addCharacter(id,timestamp,body,status)
+function addCharacter(
+					id,
+					timestamp,
+					body,
+					status
+				  ) {
+					fetch("http://localhost:8000/posts", {
+					  method: "POST",
+					  headers: {
+						"Content-Type": "application/json",
+						Accept: "application/json",
+					  },
+					  body: JSON.stringify({
+						id: id,
+						timestamp: timestamp,
+						body: body,
+						status: status
+					  }),
+					})
+					  .then(function (response) {
+						return response.json();
+					  })
+					  .then(function (data) {
+						console.log(data);
+					  })
+					  .catch((error) => console.log(error));
+				  }
+				
+	
+
+}
+// const editTodo = (itemId) => {
+// 	const id = itemId;
+// 	const timestamp = timeField.value;
+// 	const body = bodyField.value;
+// 	timeField.value = getTimeStamp();
+// 	bodyField.value = body;
+// 	console.log(body)
+
+// 	fetch(`http://localhost:8000/posts/${itemId}`,{
+// 		method: 'PATCH',
+// 		headers: {
+// 		  'Content-Type': 'application/json'
+// 		},
+// 		body: JSON.stringify({
+// 		  body:body
+// 		})
+// 	  }).then(res => {
+// 		  res.json()
+// 		})
+// 	  .then(data => console.log(data))
+
+
+// 	createTodoButton.style.display = "none"
+// 	updateTodoButton.style.display = "block"
+
+// }
+
+
+
+// const updateTodo = () => {
+// 	const todos = Todos.map(todo=>{
+// 		if(todo.id === idField.value){
+// 			todo.status = "Not complete";
+// 			todo.body = bodyField.value;
+// 			todo.timestamp = timeField.value;
+// 			return todo;
+// 		}else{
+// 			return todo;
+// 		}
+// 	})
+// 	Todos = todos;
+// 	idField.value = "";
+// 	timeField.value = "";
+// 	bodyField.value = "";
+	
+// 	updateTodoButton.style.display = "none"
+// 	createTodoButton.style.display = "block"
+// }
+
+const generateID = () => {
+	let id = `${Math.random().toString(36).substr(2, 6)}-${Math.random().toString(36).substr(2, 4)}-${Math.random().toString(36).substr(2, 4)}-${Math.random().toString(36).substr(2, 6)}`;
+	return id;
+}
+
+const getTimeStamp = () => {
+	let date = new Date();
+	let time = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+	return time;
+}
+
+const addNewTodo = () => {
+	idField.value = generateID();
+	timeField.value = getTimeStamp();
+}
+todoList.addEventListener('click', (e)=>{
+
+	const id = e.target.parentElement.parentElement.dataset.id;
+
+	if(e.target.classList.contains('fa-edit')){
+	  editTodo(id);
+	}
+	
+	if(e.target.classList.contains('fa-trash-alt')) {
+		console.log(id)
+	  deleteTodo(id);
+ 	}
+
+	if(e.target.classList.contains('fa-check')){
+	  markTodoAsComplete(id);
+	}
+})
+
+
+const deleteTodo = (itemId) => {
+	console.log(itemId)
+	remove(itemId)
+			 function remove(id){
+				fetch(`http://localhost:8000/posts/${id}`, {
+				  method: 'DELETE'
+				}).then(() => {
+				   console.log('removed');
+				}).catch(err => {
+				  console.error(err)
+				});
+}
+}
+
+const markTodoAsComplete = (itemId) => {
+	console.log(itemId)
+
+	fetch(`http://localhost:8000/posts/${itemId}`,{
+  method: 'PATCH',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    status: 'Complete'
+  })
+}).then(res => {
+	res.json()
+  })
+.then(data => console.log(data))
+
+}
+const editTodo = (itemId) => {
+	createTodoButton.style.display = "none"
+	updateTodoButton.style.display = "block"
+	const {id, timestamp, status, body} = Todos.filter(todo => todo.id == itemId)[0];
+	updateTodo(itemId)
+	idField.value = id;
+	timeField.value = getTimeStamp();
+	bodyField.value = body;
+}
+const updateTodo = (id) => {
+	fetch(`http://localhost:8000/posts/${id}`,{
+				method: 'PATCH',
+				headers: {
+				  'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+				  body:body
+				})
+			  }).then(res => {
+				  res.json()
+				})
+			  .then(data => console.log(data))
+		
+	updateTodoButton.style.display = "none"
+	createTodoButton.style.display = "block"
+}
+
+
+addNewTodoButton.addEventListener('click', addNewTodo);
+createTodoButton.addEventListener('click', addTodo);
+updateTodoButton.addEventListener('click', updateTodo);
